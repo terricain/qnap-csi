@@ -110,9 +110,6 @@ spec:
             - name: host-root
               mountPath: /host
               mountPropagation: "HostToContainer"
-            #- name: chroot-iscsiadm
-            #  mountPath: /sbin/iscsiadm
-            #  subPath: iscsiadm
             - name: iscsi-csi-run-dir
               mountPath: /var/run/qnap.terrycain.github.com
       volumes:
@@ -135,30 +132,6 @@ spec:
           hostPath:
             path: /
             type: Directory
-        #- name: chroot-iscsiadm
-        #  configMap:
-        #    defaultMode: 0555
-        #    name: configmap-csi-iscsiadm
         - name: iscsi-csi-run-dir
           hostPath:
             path: /var/run/qnap.terrycain.github.com
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  # TODO fix
-  name: configmap-csi-iscsiadm
-data:
-  iscsiadm: |
-    #!/bin/sh
-    if [ -x /host/sbin/iscsiadm ]; then
-      chroot /host /sbin/iscsiadm "$@"
-    elif [ -x /host/usr/local/sbin/iscsiadm ]; then
-      chroot /host /usr/local/sbin/iscsiadm "$@"
-    elif [ -x /host/bin/iscsiadm ]; then
-      chroot /host /bin/iscsiadm "$@"
-    elif [ -x /host/usr/local/bin/iscsiadm ]; then
-      chroot /host /usr/local/bin/iscsiadm "$@"
-    else
-      chroot /host iscsiadm "$@"
-    fi
