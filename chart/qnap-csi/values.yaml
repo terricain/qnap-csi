@@ -1,0 +1,52 @@
+# Default values for qnap-csi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+QNAPSettings:
+  # -- QNAP Web URL e.g. http://172.20.0.55:8080/
+  URL: ""
+  # -- QNAP Portal value: e.g. 172.20.0.55:3260 (this is the iSCSI portal, normally port 3260, seems it should be an IP not domain name)
+  portal: ""
+  # -- QNAP UI credentials, keys should be "username" and "password"
+  credentialsSecretName: ""
+  # -- Storage Pool ID, normally is 1
+  storagePoolID: 1
+
+controller:
+  replicaCount: 1
+  name: ""
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+
+
+node:
+  name: ""
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+
+image:
+  repository: "registry.dolphincorp.co.uk/qnap-csi"
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+csiDriverName: "qnap.terrycain.github.com"
+
+storageClass:
+  create: true
+  annotations: {}
+  name: "qnap"
+
+serviceAccount:
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""

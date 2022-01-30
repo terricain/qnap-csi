@@ -1,0 +1,15 @@
+{{- if .Values.storageClass.create }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.name }}
+  labels:
+    {{- include "qnap-csi.labels" . | nindent 4 }}
+  {{- with .Values.storageClass.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+allowVolumeExpansion: false
+reclaimPolicy: Delete
+provisioner: {{ .Values.csiDriverName }}
+{{- end }}
