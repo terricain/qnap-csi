@@ -29,9 +29,9 @@ node:
   resources: {}
 
 image:
-  repository: "registry.dolphincorp.co.uk/qnap-csi"
+  repository: "ghcr.io/terrycain/qnap-csi"
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: ""  # Will use
 
 imagePullSecrets: []
 nameOverride: ""
