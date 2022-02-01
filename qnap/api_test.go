@@ -13,7 +13,8 @@ const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 func RandStringBytes(n int) string {
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+		//
+		b[i] = letterBytes[rand.Intn(len(letterBytes))] //#nosec G404 -- Ignored weak RNG
 	}
 	return string(b)
 }
@@ -49,7 +50,7 @@ func getLoggedInClient() (*Client, error) {
 	return c, nil
 }
 
-func TestClient_GetStoragePoolSubscription (t *testing.T) {
+func TestClient_GetStoragePoolSubscription(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -66,7 +67,7 @@ func TestClient_GetStoragePoolSubscription (t *testing.T) {
 	}
 }
 
-func TestClient_GetStorageLogicalVolumes (t *testing.T) {
+func TestClient_GetStorageLogicalVolumes(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -78,7 +79,7 @@ func TestClient_GetStorageLogicalVolumes (t *testing.T) {
 	}
 }
 
-func TestClient_GetStorageISCSILuns (t *testing.T) {
+func TestClient_GetStorageISCSILuns(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -90,7 +91,7 @@ func TestClient_GetStorageISCSILuns (t *testing.T) {
 	}
 }
 
-func TestClient_GetStorageISCSITargetList (t *testing.T) {
+func TestClient_GetStorageISCSITargetList(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -102,7 +103,7 @@ func TestClient_GetStorageISCSITargetList (t *testing.T) {
 	}
 }
 
-func TestClient_CreateDeleteStorageISCSITarget (t *testing.T) {
+func TestClient_CreateDeleteStorageISCSITarget(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -122,7 +123,7 @@ func TestClient_CreateDeleteStorageISCSITarget (t *testing.T) {
 	}
 }
 
-func TestClient_CreateDeleteStorageISCSIBlockLun (t *testing.T) {
+func TestClient_CreateDeleteStorageISCSIBlockLun(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -134,9 +135,9 @@ func TestClient_CreateDeleteStorageISCSIBlockLun (t *testing.T) {
 	}
 
 	for {
-		lunInfo, err := c.GetStorageISCSILun(resp.Result)
-		if err != nil {
-			t.Fatalf("failed to create target: %#v", err)
+		lunInfo, err2 := c.GetStorageISCSILun(resp.Result)
+		if err2 != nil {
+			t.Fatalf("failed to create target: %#v", err2)
 		}
 		if lunInfo.StatusString() == "creating" {
 			fmt.Println("lun still creating")
@@ -151,7 +152,7 @@ func TestClient_CreateDeleteStorageISCSIBlockLun (t *testing.T) {
 	}
 }
 
-func TestClient_CreateAttachStorageISCSITargetBlockLun (t *testing.T) {
+func TestClient_CreateAttachStorageISCSITargetBlockLun(t *testing.T) {
 	c, err := getLoggedInClient()
 	if err != nil {
 		t.Fatalf("failed to init client: %#v", err)
@@ -199,9 +200,9 @@ func TestClient_CreateAttachStorageISCSITargetBlockLun (t *testing.T) {
 	}
 
 	for {
-		lunInfo, err := c.GetStorageISCSILun(lunResp.Result)
-		if err != nil {
-			t.Fatalf("failed to create target: %#v", err)
+		lunInfo, err2 := c.GetStorageISCSILun(lunResp.Result)
+		if err2 != nil {
+			t.Fatalf("failed to create target: %#v", err2)
 		}
 		if lunInfo.StatusString() == "creating" {
 			time.Sleep(1 * time.Second)

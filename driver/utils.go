@@ -3,11 +3,12 @@ package driver
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/container-storage-interface/spec/lib/go/csi"
-	"k8s.io/apimachinery/pkg/util/sets"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/container-storage-interface/spec/lib/go/csi"
+	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 func seenIndexesToBase64String(ints []int) string {
@@ -29,14 +30,14 @@ func base64SeenIndexesToMap(value string) (*sets.Int, error) {
 	}
 
 	for _, strInt := range strings.Split(string(s), ",") {
-		intValue, err := strconv.Atoi(strInt)
-		if err != nil {
-			return nil, err
+		intValue, err2 := strconv.Atoi(strInt)
+		if err2 != nil {
+			return nil, err2
 		}
 		result.Insert(intValue)
 	}
 
-	return nil, err
+	return &result, err
 }
 
 var cleanRegex = regexp.MustCompile(`([^a-z0-9A-Z]*)`)
@@ -71,7 +72,7 @@ func extractStorage(capRange *csi.CapacityRange) (int64, error) {
 		return 0, fmt.Errorf("limit (%v) can not be less than minimum supported volume size (%v)", formatBytes(limitBytes), formatBytes(minimumVolumeSizeInBytes))
 	}
 
-	if limitSet && limitBytes % (1 * giB) != 0 {
+	if limitSet && limitBytes%(1*giB) != 0 {
 		return 0, fmt.Errorf("limit (%v) must be a multiple of 1GB", limitBytes)
 	}
 
@@ -79,7 +80,7 @@ func extractStorage(capRange *csi.CapacityRange) (int64, error) {
 		return 0, fmt.Errorf("required (%v) can not exceed maximum supported volume size (%v)", formatBytes(requiredBytes), formatBytes(maximumVolumeSizeInBytes))
 	}
 
-	if requiredSet && requiredBytes % (1 * giB) != 0 {
+	if requiredSet && requiredBytes%(1*giB) != 0 {
 		return 0, fmt.Errorf("required (%v) must be a multiple of 1GB", requiredBytes)
 	}
 
@@ -108,16 +109,16 @@ func formatBytes(inputBytes int64) string {
 
 	switch {
 	case inputBytes >= tiB:
-		output = output / tiB
+		output /= tiB
 		unit = "Ti"
 	case inputBytes >= giB:
-		output = output / giB
+		output /= giB
 		unit = "Gi"
 	case inputBytes >= miB:
-		output = output / miB
+		output /= miB
 		unit = "Mi"
 	case inputBytes >= kiB:
-		output = output / kiB
+		output /= kiB
 		unit = "Ki"
 	case inputBytes == 0:
 		return "0"

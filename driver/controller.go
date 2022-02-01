@@ -3,14 +3,15 @@ package driver
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"k8s.io/apimachinery/pkg/util/sets"
-	"strings"
-	"time"
 )
 
 const (
@@ -22,29 +23,26 @@ const (
 )
 
 const (
-	// minimumVolumeSizeInBytes is used to validate that the user is not trying
-	// to create a volume that is smaller than what we support
+	// MinimumVolumeSizeInBytes is used to validate that the user is not trying
+	// to create a volume that is smaller than what we support.
 	minimumVolumeSizeInBytes int64 = 1 * giB
 
-	// maximumVolumeSizeInBytes is used to validate that the user is not trying
-	// to create a volume that is larger than what we support
+	// MaximumVolumeSizeInBytes is used to validate that the user is not trying
+	// to create a volume that is larger than what we support.
 	maximumVolumeSizeInBytes int64 = 128 * giB
 
-	// defaultVolumeSizeInBytes is used when the user did not provide a size or
-	// the size they provided did not satisfy our requirements
+	// DefaultVolumeSizeInBytes is used when the user did not provide a size or
+	// the size they provided did not satisfy our requirements.
 	defaultVolumeSizeInBytes int64 = 16 * giB
 
-	// Volume prefix
+	// DefaultVolumePrefix is the CSI Volume prefix.
 	DefaultVolumePrefix string = "csi"
 )
 
-var (
-	// we only support accessModes.ReadWriteOnce for iscsi volumes
-	// will change if we support NFS
-	supportedAccessMode = &csi.VolumeCapability_AccessMode{
-		Mode: csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER,
-	}
-)
+// we only support accessModes.ReadWriteOnce for iscsi volumes will change if we support NFS.
+var supportedAccessMode = &csi.VolumeCapability_AccessMode{
+	Mode: csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER,
+}
 
 func (d *Driver) CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
 	if req.Name == "" {
@@ -138,7 +136,7 @@ func (d *Driver) CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest)
 		log.Error().Err(err).Msg("Failed to get list of ISCSI targets")
 		return nil, status.Error(codes.Internal, "Failed to get list of ISCSI targets")
 	}
-	var iqn = ""
+	iqn := ""
 	for _, target := range targetList.Targets {
 		if target.Name == name {
 			iqn = target.IQN
@@ -156,9 +154,9 @@ func (d *Driver) CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest)
 			CapacityBytes: size,
 			VolumeContext: map[string]string{
 				"targetPortal": d.portal,
-				"iqn": iqn,
-				"lun": "0",
-				"portals": "[]",
+				"iqn":          iqn,
+				"lun":          "0",
+				"portals":      "[]",
 			},
 		},
 	}
@@ -245,7 +243,6 @@ func (d *Driver) ValidateVolumeCapabilities(ctx context.Context, req *csi.Valida
 		},
 	}
 
-
 	return result, nil
 }
 
@@ -295,17 +292,17 @@ func (d *Driver) ListVolumes(ctx context.Context, req *csi.ListVolumesRequest) (
 		// entries, not at limit, add one
 		// TODO(more) go find the LUN attached to the target and get capacity
 		entries = append(entries, &csi.ListVolumesResponse_Entry{
-			Volume:               &csi.Volume{
-				VolumeId:             target.Name,
+			Volume: &csi.Volume{
+				VolumeId: target.Name,
 				// Could use volume context for specific values,
 			},
-			Status:               nil,
+			Status: nil,
 		})
 		seenIds.Insert(target.TargetIndex)
 	}
 
 	result := &csi.ListVolumesResponse{
-		Entries: entries,
+		Entries:   entries,
 		NextToken: nextToken,
 	}
 
@@ -332,11 +329,11 @@ func (d *Driver) GetCapacity(ctx context.Context, req *csi.GetCapacityRequest) (
 }
 
 func (d *Driver) ControllerGetCapabilities(ctx context.Context, req *csi.ControllerGetCapabilitiesRequest) (*csi.ControllerGetCapabilitiesResponse, error) {
-	newCap := func(cap csi.ControllerServiceCapability_RPC_Type) *csi.ControllerServiceCapability {
+	newCap := func(capType csi.ControllerServiceCapability_RPC_Type) *csi.ControllerServiceCapability {
 		return &csi.ControllerServiceCapability{
 			Type: &csi.ControllerServiceCapability_Rpc{
 				Rpc: &csi.ControllerServiceCapability_RPC{
-					Type: cap,
+					Type: capType,
 				},
 			},
 		}
@@ -361,9 +358,6 @@ func (d *Driver) ControllerGetCapabilities(ctx context.Context, req *csi.Control
 
 	return resp, nil
 }
-
-
-
 
 func (d *Driver) CreateSnapshot(ctx context.Context, req *csi.CreateSnapshotRequest) (*csi.CreateSnapshotResponse, error) {
 	// TODO(unimpl)

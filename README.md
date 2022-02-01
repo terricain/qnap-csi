@@ -6,8 +6,7 @@ Its only been tested on a TS-1279U-RP (firmware 4.3.6.1711)
 
 # TODO
 
-* Publish docker image to GHCR
-* Add CI
+* Update helm chart
 * Publish helm chart to github releases
 
 # How to install

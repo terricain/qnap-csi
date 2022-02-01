@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -14,7 +15,6 @@ const (
 	giB
 	tiB
 )
-
 
 func main() {
 	conn, err := grpc.Dial("unix:///tmp/csi/csi.sock", grpc.WithInsecure())
@@ -46,7 +46,7 @@ func main() {
 	//	},
 	//})
 	_, err = client.NodeUnpublishVolume(context.Background(), &csi.NodeUnpublishVolumeRequest{
-		VolumeId: "testvol1",
+		VolumeId:   "testvol1",
 		TargetPath: "/tmp/lala",
 	})
 	if err != nil {

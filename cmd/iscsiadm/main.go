@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/rs/zerolog/log"
 	"os"
 	"syscall"
+
+	"github.com/rs/zerolog/log"
 )
 
 var iscsiPaths = []string{

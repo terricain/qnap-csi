@@ -1,44 +1,29 @@
 package main
 
-//package main
-//
-//import (
-//	"context"
-//	"flag"
-//	"fmt"
-//	"log"
-//	"os"
-//	"os/signal"
-//	"syscall"
-//
-//	"github.com/digitalocean/csi-digitalocean/driver"
-//)
-//
-
 import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	iscsiLib "github.com/kubernetes-csi/csi-lib-iscsi/iscsi"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/terrycain/qnap-csi/driver"
-	"os"
-	"os/signal"
-	"syscall"
 )
-
 
 func main() {
 	var (
-		endpoint   = flag.String("endpoint", "unix:///var/run/"+driver.DefaultDriverName+"/csi.sock", "CSI endpoint")
-		qnapURL    = flag.String("url", "", "QNAP URL")
-		logLevel   = flag.String("log-level", "info", "Log level (info/warn/fatal/error)")
-		version    = flag.Bool("version", false, "Print the version and exit")
-		controller = flag.Bool("controller", false, "Serve controller driver, else it will operate as node driver")
-		prefix 	   = flag.String("prefix", driver.DefaultVolumePrefix, "Naming prefix")
-		nodeID 	   = flag.String("node-id", "", "Node ID")
-		portal 	   = flag.String("portal", "", "Portal Address (IP:PORT)")
+		endpoint      = flag.String("endpoint", "unix:///var/run/"+driver.DefaultDriverName+"/csi.sock", "CSI endpoint")
+		qnapURL       = flag.String("url", "", "QNAP URL")
+		logLevel      = flag.String("log-level", "info", "Log level (info/warn/fatal/error)")
+		version       = flag.Bool("version", false, "Print the version and exit")
+		controller    = flag.Bool("controller", false, "Serve controller driver, else it will operate as node driver")
+		prefix        = flag.String("prefix", driver.DefaultVolumePrefix, "Naming prefix")
+		nodeID        = flag.String("node-id", "", "Node ID")
+		portal        = flag.String("portal", "", "Portal Address (IP:PORT)")
 		storagePoolID = flag.Int("storage-pool-id", 1, "Storage Pool ID")
 	)
 	flag.Parse()
@@ -79,6 +64,12 @@ func main() {
 		}
 	}
 
+	if err = run(drv); err != nil {
+		log.Error().Err(err).Msg("Failed to run CSI driver")
+	}
+}
+
+func run(drv *driver.Driver) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -89,8 +80,5 @@ func main() {
 		log.Info().Msgf("Caught signal %s", sig.String())
 		cancel()
 	}()
-
-	if err = drv.Run(ctx); err != nil {
-		log.Fatal().Err(err).Msg("Failed to run CSI driver")
-	}
+	return drv.Run(ctx)
 }
