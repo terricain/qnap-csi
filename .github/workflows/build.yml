@@ -37,10 +37,11 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
-        with:
-          version: latest
-          endpoint: builders
 
-      - name: Build
-        run: |
-          docker buildx build --platform=linux/amd64,linux/arm64 -t test .
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: test
