@@ -4,6 +4,12 @@ This is a very alpha QNAP Kubernetes CSI driver which lets you automatically pro
 
 Its only been tested on a TS-1279U-RP (firmware 4.3.6.1711)
 
+# TODO
+
+* Publish docker image to GHCR
+* Add CI
+* Publish helm chart to github releases
+
 # How to install
 
 The main Helm values you'll need to install this would be:
@@ -103,4 +109,13 @@ The QNAP I have has a Storage & Snapshots "app" which is where you manage iSCSI 
 API, so I've pieced together the bare minimum required to create a volume by looking at what the browser submits. It's all
 XML based and a pile of garbage, there are random parts of the API which has no error checking and will result in the
 HTTP connection being dropped with no response, and you'll get a lovely error message in the NAS dashboard.
+
+## iSCSI
+
+When a request to create a volume goes to the controller, it sets some context values which would be iSCSI IQN, portal ip's etc...
+This then eventually gets sent to the node that needs to mount the volume, it passes those values to an `iscsiadm` shim binary
+which essentially finds the actual iscsiadm binary on the host (though a mounted volume) and runs it with inside a chroot of the host's
+volume.
+
+If you're going to get any errors it'll most likely be weird iSCSI return codes which are ultra cryptic.
 
