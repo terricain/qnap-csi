@@ -1,3 +1,4 @@
+FROM alpine:3.15.0 AS base
 FROM golang:1.17.6-alpine3.15 AS build
 
 WORKDIR /usr/local/go/src/cmd/qnap-csi-plugin
@@ -15,7 +16,7 @@ RUN ls -lah
 RUN go build -o /plugin cmd/qnap-csi-plugin/main.go
 RUN go build -o /iscsiadm cmd/iscsiadm/main.go
 
-FROM alpine:3.15.0 AS release
+FROM base AS release
 RUN apk update && \
     apk add lsblk e2fsprogs xfsprogs util-linux-misc
 # lsblk
@@ -26,4 +27,3 @@ COPY --from=build /plugin /plugin
 COPY --from=build /iscsiadm /sbin/iscsiadm
 
 ENTRYPOINT ["/plugin"]
-
