@@ -25,9 +25,10 @@ do here, if you have more, you should be more than capable of picking the right 
 
 To install the Helm chart: (this assumes you've cloned the repo as the chart isnt hosted yet)
 ```shell
-helm install -n kube-system -f custom-values.yaml qnap-csi ./charts/qnap-csi
+helm repo add qnap-csi https://terrycain.github.io/qnap-csi/
+helm install -n kube-system -f custom-values.yaml qnap-csi qnap-csi/qnap-csi
 ```
-This will install the chart under the name of `qnap-csi` into the `kube-system` namespace using custom values in a YAML file.
+This will install the chart under the name of `qnap-csi` into the `kube-system` namespace using custom values in a YAML file. `qnap-csi/qnap-csi` is the repo and chart name, all of which are called `qnap-csi` :D
 
 By default, it will create a storage account called `qnap` which you'll want to use in any persistent volume claims.
 
