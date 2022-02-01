@@ -25,7 +25,7 @@ do here, if you have more, you should be more than capable of picking the right 
 
 To install the Helm chart: (this assumes you've cloned the repo as the chart isnt hosted yet)
 ```shell
-helm install -n kube-system -f custom-values.yaml qnap-csi ./chart/qnap-csi
+helm install -n kube-system -f custom-values.yaml qnap-csi ./charts/qnap-csi
 ```
 This will install the chart under the name of `qnap-csi` into the `kube-system` namespace using custom values in a YAML file.
 
