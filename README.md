@@ -4,11 +4,6 @@ This is a very alpha QNAP Kubernetes CSI driver which lets you automatically pro
 
 Its only been tested on a TS-1279U-RP (firmware 4.3.6.1711)
 
-# TODO
-
-* Update helm chart
-* Publish helm chart to github releases
-
 # How to install
 
 The main Helm values you'll need to install this would be:
@@ -119,3 +114,7 @@ volume.
 
 If you're going to get any errors it'll most likely be weird iSCSI return codes which are ultra cryptic.
 
+## TODO
+
+* Update argument/environment parsing so that options are only required when needed -- e.g. node driver does not need qnap information
+* Potentially look at supporting NFS
